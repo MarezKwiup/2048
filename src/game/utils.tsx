@@ -59,18 +59,21 @@ export function addRandomTile(board: TileValue[][]): TileValue[][] {
 interface MergeResult {
   newRow: TileValue[];
   scoreGain: number;
+  mergedIndices:number[];
 }
 
 function handleRowMerge(row: TileValue[], size: number): MergeResult {
   let scoreGain = 0;
   const newRow: TileValue[] = new Array(size).fill(0);
+  const mergedIndices:number[]=[];
   let currVal = -1;
   let currIndex = -1;
   for (let i = 0; i < row.length; i++) {
     if (row[i] === 0) continue;
     if ((row[i] as number) === currVal) {
       newRow[currIndex] = (currVal * 2) as TileValue;
-      scoreGain = currVal * 2;
+      scoreGain += currVal * 2;
+      mergedIndices.push(currIndex);
       currIndex++;
       currVal = -1;
     } else {
@@ -79,12 +82,13 @@ function handleRowMerge(row: TileValue[], size: number): MergeResult {
       currVal = row[i];
     }
   }
-  return { newRow, scoreGain };
+  return { newRow, scoreGain,mergedIndices };
 }
 
 interface OperationResult {
   newBoard: TileValue[][];
   scoreGain: number;
+  merged? : {r:number,c:number}[];
 }
 
 export function handleOperation(
@@ -96,6 +100,8 @@ export function handleOperation(
     Array(size).fill(0)
   );
   let totalScore = 0;
+
+  const mergedPositions: { r: number; c: number }[] = [];
   switch (move) {
     case "UP": {
       for (let i = 0; i < board.length; i++) {
@@ -103,11 +109,12 @@ export function handleOperation(
         for (let j = 0; j < board.length; j++) {
           arr.push(board[j][i]);
         }
-        const { newRow, scoreGain } = handleRowMerge(arr, size);
+        const { newRow, scoreGain,mergedIndices } = handleRowMerge(arr, size);
         totalScore += scoreGain;
         for (let j = 0; j < board.length; j++) {
           newBoard[j][i] = newRow[j] as TileValue;
         }
+        mergedIndices.forEach((rIdx) => mergedPositions.push({ r: rIdx, c: i }));
       }
       break;
     }
@@ -117,12 +124,17 @@ export function handleOperation(
         for (let j = board.length - 1; j >= 0; j--) {
           arr.push(board[j][i]);
         }
-        const { newRow, scoreGain } = handleRowMerge(arr, size);
+        const { newRow, scoreGain,mergedIndices } = handleRowMerge(arr, size);
         newRow.reverse();
         totalScore += scoreGain;
         for (let j = board.length - 1; j >= 0; j--) {
           newBoard[j][i] = newRow[j];
         }
+
+        mergedIndices.forEach((idx) => {
+          const mappedRow = size - 1 - idx; 
+          mergedPositions.push({ r: mappedRow, c: i });
+        });
       }
       break;
     }
@@ -132,11 +144,12 @@ export function handleOperation(
         for (let j = 0; j < board.length; j++) {
           arr.push(board[i][j]);
         }
-        const { newRow, scoreGain } = handleRowMerge(arr, size);
+        const { newRow, scoreGain,mergedIndices } = handleRowMerge(arr, size);
         totalScore += scoreGain;
         for (let j = 0; j < board.length; j++) {
           newBoard[i][j] = newRow[j];
         }
+        mergedIndices.forEach((cIdx) => mergedPositions.push({ r: i, c: cIdx }));
       }
       break;
     }
@@ -146,12 +159,16 @@ export function handleOperation(
         for (let j = board.length - 1; j >= 0; j--) {
           arr.push(board[i][j]);
         }
-        const { newRow, scoreGain } = handleRowMerge(arr, size);
+        const { newRow, scoreGain,mergedIndices } = handleRowMerge(arr, size);
         newRow.reverse();
         totalScore += scoreGain;
         for (let j = board.length - 1; j >= 0; j--) {
           newBoard[i][j] = newRow[j];
         }
+        mergedIndices.forEach((idx) => {
+          const mappedCol = size - 1 - idx;
+          mergedPositions.push({ r: i, c: mappedCol });
+        });
       }
       break;
     }
@@ -160,7 +177,7 @@ export function handleOperation(
       return { newBoard: board, scoreGain: 0 };
   }
 
-  return { newBoard, scoreGain: totalScore };
+  return { newBoard, scoreGain: totalScore,merged:mergedPositions };
 }
 
 export function checkWin(board: TileValue[][]): boolean {

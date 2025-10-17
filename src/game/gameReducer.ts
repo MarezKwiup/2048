@@ -12,6 +12,7 @@ export interface GameState {
   size: number;
   score: number;
   gameStatus?: "playing" | "won" | "lost";
+  mergedPositions?: { r: number; c: number }[];
 }
 
 export type GameAction =
@@ -22,7 +23,8 @@ export type GameAction =
   | { type: "MOVE_UP" }
   | { type: "MOVE_DOWN" }
   | { type: "MOVE_LEFT" }
-  | { type: "MOVE_RIGHT" };
+  | { type: "MOVE_RIGHT" }
+  | { type: "CLEAR_MERGES" };
 
 export const initialState: GameState = {
   board: createEmptyBoard(4),
@@ -40,7 +42,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           addRandomTile(createEmptyBoard(state.size) as TileValue[][])
         ),
         score: 0,
-        gameStatus:'playing'
+        gameStatus: "playing",
       };
     case "SET_SIZE":
       return {
@@ -65,12 +67,18 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case "MOVE_LEFT":
     case "MOVE_RIGHT": {
       const moveDirection = action.type.split("_")[1];
-      const { newBoard, scoreGain } = handleOperation(
+      const { newBoard, scoreGain,merged } = handleOperation(
         state.board as TileValue[][],
         state.size,
         moveDirection
       );
-      const boardWithAddedTile = addRandomTile(newBoard);
+
+      const boardUnchanged =
+        JSON.stringify(newBoard) === JSON.stringify(state.board);
+
+      if (boardUnchanged) return state;
+
+      const boardWithAddedTile =  addRandomTile(newBoard);
 
       const newStatus = checkWin(boardWithAddedTile)
         ? "won"
@@ -83,8 +91,14 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         board: boardWithAddedTile,
         score: state.score + scoreGain,
         gameStatus: newStatus,
+        mergedPositions: merged ?? [],
       };
     }
+    case 'CLEAR_MERGES':
+        return {
+            ...state,
+            mergedPositions:[]
+        }
     default:
       return state;
   }

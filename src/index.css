@@ -1,1 +1,11 @@
 @import "tailwindcss";
+
+@keyframes mergePop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+.merged {
+  animation: mergePop 180ms ease-in-out;
+}

@@ -42,7 +42,15 @@ function Board() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [dispatch]);
+  }, []);
+
+  useEffect(() => {
+    if (!state.mergedPositions || state.mergedPositions.length === 0) return;
+    const t = setTimeout(() => {
+      dispatch({ type: "CLEAR_MERGES" });
+    }, 180);
+    return () => clearTimeout(t);
+  }, [state.mergedPositions, dispatch]);
 
   return (
     <div className="flex flex-col items-center bg-[#ece0c7] h-screen">
@@ -78,21 +86,28 @@ function Board() {
         }}
       >
         {state.board.map((row, i) =>
-          row.map((cell, j) => (
-            <div
-              key={`${i}-${j}`}
-              className="aspect-square flex items-center justify-center bg-[#cdc1b4] text-[#776e65] font-bold rounded-md shadow-inner"
-            >
-              <Cell value={cell as TileValue} />
-            </div>
-          ))
+          row.map((cell, j) => {
+            const isMerged = !!state.mergedPositions?.some(
+              (ele) => ele.r === i && ele.c === j
+            );
+            return (
+              <div
+                key={`${i}-${j}`}
+                className="aspect-square flex items-center justify-center bg-[#cdc1b4] text-[#776e65] font-bold rounded-md shadow-inner"
+              >
+                <Cell value={cell as TileValue}  merged={isMerged}/>
+              </div>
+            );
+          })
         )}
       </div>
 
       {state.gameStatus === "won" && <GameModal message="You Win" />}
       {state.gameStatus === "lost" && <GameModal message="Game Over" />}
 
-      <p className="text-[#7F7268] mt-2 ">Use arrow keys to move tiles. Tiles with the same number merge into one!</p>
+      <p className="text-[#7F7268] mt-2 ">
+        Use arrow keys to move tiles. Tiles with the same number merge into one!
+      </p>
     </div>
   );
 }
