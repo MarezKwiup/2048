@@ -1,74 +1,86 @@
-# React + TypeScript + Vite
+# 2048 Game
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A fully functional **2048 game** built with **React**, **TypeScript**, and **TailwindCSS**. This project demonstrates state management with **React Context + Reducer** and implements the full game logic including tile merging, scoring, and win/loss detection.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## React Compiler
+- Classic 2048 gameplay with a dynamic grid size (3×3 to 8×8).
+- Keyboard controls for moving tiles: Arrow keys.
+- Score tracking and display.
+- Win/Loss detection with modal popups.
+- Responsive UI built with **TailwindCSS**.
+- Random tile generation and smooth merging logic.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## Installation
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. Clone the repository:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+git clone <your-repo-url>
+cd 2048
+```
+2. Install dependencies:
+```bash
+npm install
+```
+3. Run the development server:
+```bash
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+4. Build for production:
+```bash
+npm run build
 ```
-# 2048
+## Gameplay
+- Use Arrow keys to move tiles.
+- Tiles with the same number merge into one when they collide.
+- Your goal is to reach the 2048 tile.
+- You can start a new game or change the board size anytime using the selector.
+
+## Implementation Details
+
+### Uses a 2-d matrix data structure to store the current state and handle updates
+
+### 1. Board Initialization
+- utils.ts provides createEmptyBoard() to generate an empty board and addRandomTile() to add new tiles.
+
+### 2. Game State Management
+- GameContext + useReducer manages the game state, including board, score, and game status.
+
+### 3. Game Logic
+
+- handleOperation() handles moves in all four directions with proper tile merging.
+
+- checkWin() and checkLose() detect game end conditions.
+
+### 4. UI Components
+
+- Board.tsx renders the game board and handles keyboard input.
+
+- Cell.tsx renders individual tiles with color codes.
+
+- SizeSelect.tsx allows the user to select board size.
+
+- GameModal.tsx displays a modal on win/loss.
+
+### 5. Styling
+
+- TailwindCSS is used for responsive and modern UI design.
+
+## Technologies Used
+
+- React
+- TypeScript
+- TailwindCSS
+- Vite (build tool and development server)
+- Responsive UI built with **TailwindCSS**.
+
+
+
+
+
