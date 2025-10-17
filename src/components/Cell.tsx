@@ -7,7 +7,7 @@ const Cell = ({value}:CellProps)=>{
 
     return (
         <div className="h-full rounded-md w-full flex items-center justify-center" style={{backgroundColor:background,color:text}}>
-            {value!==0&&value}
+            <span className="text-3xl">{value!==0&&value}</span>
         </div>
     )
 }
