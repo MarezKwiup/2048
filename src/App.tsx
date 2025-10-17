@@ -1,6 +1,7 @@
-import React, { useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { GameProvider, GameContext } from "./game/GameContext";
-import Cell from "./components/cell";
+
+import Cell from "./components/Cell";
 import type { TileValue } from "./game/utils";
 import GameModal from "./components/GameModal";
 import SizeSelector from "./components/SizeSelect";
