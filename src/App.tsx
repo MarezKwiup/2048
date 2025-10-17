@@ -45,7 +45,7 @@ function Board() {
   }, [dispatch]);
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center bg-[#ece0c7] h-screen">
       <div className="flex gap-50 mt-4 justify-between">
         <div className="flex flex-col items-center justify-center">
           <h1 className="text-[#3D3329] text-6xl font-extrabold">2048</h1>
